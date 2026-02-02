@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shreyash Smart Lock</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #2c3e50; color: white; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        .lock-container { background: #34495e; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; max-width: 300px; }
+        .btn { background-color: #e74c3c; color: white; border: none; padding: 25px 50px; font-size: 22px; border-radius: 100px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; text-transform: uppercase; }
+        .btn:active { transform: scale(0.95); background-color: #c0392b; }
+        .status { margin-top: 20px; font-size: 14px; color: #bdc3c7; }
+    </style>
+</head>
+<body>
+    <div class="lock-container">
+        <h1>Smart Lock</h1>
+        <p>Door is currently: <b>Locked</b></p>
+        <button class="btn" onclick="openLock()">🔓 UNLOCK</button>
+        <div id="msg" class="status">Click button to open</div>
+    </div>
+
+    <script>
+        function openLock() {
+            const token = "ggOXzy4nMnkAA0lxznEey8lt5RTmt17U";
+            const apiUrl = `https://blynk.cloud/external/api/update?token=${token}&V1=1`;
+            
+            document.getElementById('msg').innerText = "Connecting...";
+            
+            fetch(apiUrl)
+            .then(res => {
+                document.getElementById('msg').innerText = "Command Sent Successfully!";
+                setTimeout(() => { document.getElementById('msg').innerText = "Auto-Locking in 5s..."; }, 1000);
+            })
+            .catch(err => {
+                document.getElementById('msg').innerText = "Error! Check Internet.";
+            });
+        }
+    </script>
+</body>
+</html>
