@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Lock Control</title>
+    <title>Shreyash's Smart Lock</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,14 +22,15 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 300px;
+            width: 320px;
         }
-        h1 { font-size: 24px; margin-bottom: 20px; color: #00d4ff; }
+        /* Title Styling */
+        .user-name { font-size: 18px; color: #aaa; margin-bottom: 5px; }
+        .app-title { font-size: 28px; font-weight: bold; color: #00d4ff; margin-top: 0; text-transform: uppercase; }
         
-        /* Glass Morphism Button */
         .lock-btn {
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(145deg, #00d4ff, #005f7a);
@@ -40,36 +41,20 @@
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
             transition: 0.3s;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin: 0 auto;
+            margin: 20px auto;
         }
-        .lock-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 5px rgba(0, 212, 255, 0.2);
-        }
-        .status {
-            margin-top: 25px;
-            font-size: 14px;
-            color: #aaa;
-        }
-        .indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-            background: #ff4d4d; /* Default Red */
-        }
+        .lock-btn:active { transform: scale(0.95); }
+        .status { margin-top: 20px; font-size: 14px; color: #888; }
+        .indicator { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background: #ff4d4d; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>shreyash tripathi's
-               
-             SMART LOCK</h1>
+        <div class="user-name">Shreyash Tripathi's</div>
+        <div class="app-title">SMART LOCK</div>
         
         <button class="lock-btn" onclick="openLock()">
             <span id="btn-text">TAP TO<br>UNLOCK</span>
@@ -77,12 +62,11 @@
 
         <div class="status">
             <span id="dot" class="indicator"></span>
-            <span id="status-text">Ready to Send</span>
+            <span id="status-text">System Ready</span>
         </div>
     </div>
 
     <script>
-        // Aapka updated token aur V1 pin
         const blynkUrl = "https://blynk.cloud/external/api/update?token=ggOXzy4nMnkAA0lxznEey8lt5RTmt17U&V1=1";
 
         function openLock() {
@@ -90,31 +74,25 @@
             const statusText = document.getElementById('status-text');
             const dot = document.getElementById('dot');
 
-            // UI feedback
             btnText.innerHTML = "OPENING...";
-            statusText.innerText = "Sending Command...";
-            dot.style.background = "#ffeb3b"; // Yellow while sending
+            statusText.innerText = "Connecting to Cloud...";
+            dot.style.background = "#ffeb3b";
 
-            // Blynk API Call
             fetch(blynkUrl)
                 .then(response => {
                     if (response.ok) {
-                        statusText.innerText = "Success: Lock Opened!";
-                        dot.style.background = "#4CAF50"; // Green for success
-                        
-                        // 5 second baad button reset karega
+                        statusText.innerText = "Success: Unlocked!";
+                        dot.style.background = "#4CAF50";
                         setTimeout(() => {
                             btnText.innerHTML = "TAP TO<br>UNLOCK";
-                            statusText.innerText = "Ready to Send";
+                            statusText.innerText = "System Ready";
                             dot.style.background = "#ff4d4d";
                         }, 5000);
-                    } else {
-                        throw new Error("Network Error");
                     }
                 })
                 .catch(error => {
-                    statusText.innerText = "Error: ESP32 Offline?";
-                    dot.style.background = "#f44336"; // Red for error
+                    statusText.innerText = "Error: Check Connection";
+                    dot.style.background = "#f44336";
                     btnText.innerHTML = "RETRY";
                 });
         }
