@@ -1,40 +1,120 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shreyash Smart Lock</title>
+    <title>Smart Lock Control</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #2c3e50; color: white; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
-        .lock-container { background: #34495e; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto; max-width: 300px; }
-        .btn { background-color: #e74c3c; color: white; border: none; padding: 25px 50px; font-size: 22px; border-radius: 100px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; text-transform: uppercase; }
-        .btn:active { transform: scale(0.95); background-color: #c0392b; }
-        .status { margin-top: 20px; font-size: 14px; color: #bdc3c7; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 300px;
+        }
+        h1 { font-size: 24px; margin-bottom: 20px; color: #00d4ff; }
+        
+        /* Glass Morphism Button */
+        .lock-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(145deg, #00d4ff, #005f7a);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .lock-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 5px rgba(0, 212, 255, 0.2);
+        }
+        .status {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            background: #ff4d4d; /* Default Red */
+        }
     </style>
 </head>
 <body>
-    <div class="lock-container">
-        <h1>Smart Lock</h1>
-        <p>Door is currently: <b>Locked</b></p>
-        <button class="btn" onclick="openLock()">🔓 UNLOCK</button>
-        <div id="msg" class="status">Click button to open</div>
+
+    <div class="container">
+        <h1>SMART LOCK</h1>
+        
+        <button class="lock-btn" onclick="openLock()">
+            <span id="btn-text">TAP TO<br>UNLOCK</span>
+        </button>
+
+        <div class="status">
+            <span id="dot" class="indicator"></span>
+            <span id="status-text">Ready to Send</span>
+        </div>
     </div>
 
     <script>
+        // Aapka updated token aur V1 pin
+        const blynkUrl = "https://blynk.cloud/external/api/update?token=ggOXzy4nMnkAA0lxznEey8lt5RTmt17U&V1=1";
+
         function openLock() {
-            const token = "ggOXzy4nMnkAA0lxznEey8lt5RTmt17U";
-            const apiUrl = `https://blynk.cloud/external/api/update?token=${token}&V1=1`;
-            
-            document.getElementById('msg').innerText = "Connecting...";
-            
-            fetch(https://blynk.cloud/external/api/update?token=ggOXzy4nMnkAA0lxznEey8lt5RTmt17U&V1=1)
-            .then(res => {
-                document.getElementById('msg').innerText = "Command Sent Successfully!";
-                setTimeout(() => { document.getElementById('msg').innerText = "Auto-Locking in 5s..."; }, 1000);
-            })
-            .catch(err => {
-                document.getElementById('msg').innerText = "Error! Check Internet.";
-            });
+            const btnText = document.getElementById('btn-text');
+            const statusText = document.getElementById('status-text');
+            const dot = document.getElementById('dot');
+
+            // UI feedback
+            btnText.innerHTML = "OPENING...";
+            statusText.innerText = "Sending Command...";
+            dot.style.background = "#ffeb3b"; // Yellow while sending
+
+            // Blynk API Call
+            fetch(blynkUrl)
+                .then(response => {
+                    if (response.ok) {
+                        statusText.innerText = "Success: Lock Opened!";
+                        dot.style.background = "#4CAF50"; // Green for success
+                        
+                        // 5 second baad button reset karega
+                        setTimeout(() => {
+                            btnText.innerHTML = "TAP TO<br>UNLOCK";
+                            statusText.innerText = "Ready to Send";
+                            dot.style.background = "#ff4d4d";
+                        }, 5000);
+                    } else {
+                        throw new Error("Network Error");
+                    }
+                })
+                .catch(error => {
+                    statusText.innerText = "Error: ESP32 Offline?";
+                    dot.style.background = "#f44336"; // Red for error
+                    btnText.innerHTML = "RETRY";
+                });
         }
     </script>
 </body>
